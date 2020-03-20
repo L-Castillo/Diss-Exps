@@ -154,8 +154,8 @@ class Rectangle {
                 ctx.stroke();
                 // vertical
                 ctx.beginPath();
-                ctx.moveTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] - 10);
-                ctx.lineTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] + 10);
+                ctx.moveTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] - 5);
+                ctx.lineTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] + 5);
                 ctx.stroke();
             }
 
@@ -173,8 +173,8 @@ class Rectangle {
                 ctx.stroke();
                 // vertical
                 ctx.beginPath();
-                ctx.moveTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] - 10);
-                ctx.lineTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] + 10);
+                ctx.moveTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] - 5);
+                ctx.lineTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] + 5);
                 ctx.stroke();
             }
         }
