@@ -9,40 +9,66 @@
 </canvas>
 <div class="slidecontainer" id="slider">
     <input onmouseup="animateAgain()" type="range" min="1" max="200" value="100" class="slider" style="width:600px" id="myRange">
-    <button id="nextButton" onclick="animateAgain()" style="display:inline">Next</button>
+    <button id="nextButton" onclick="nextButton()" style="display:inline">New Rectangle</button>
 </div>
+<label for="mirroring">Direction</label>
+<select id="mirroring">
+    <option value="No">Left to Right</option>
+    <option value="Yes">Right to Left</option>
+</select>
+<label for="timing">Timing</label>
+<select id="timing">
+    <option value="canonical">Canonical</option>
+    <option value="reversed">Reversed</option>
+</select>
+<label for="aHide">Hide A</label>
+<select id="aHide">
+    <option value="No">No</option>
+    <option value="Yes">Yes</option>
+</select>
+<label for="extraObjects">Extra Objects</label>
+<select id="extraObjects">
+    <option value="No">No</option>
+    <option value="Yes">Yes</option>
+</select>
+<label for="speed"> Speed </label>
+<input id="speed" type="number" min="0.1" max="1" step="0.1" value="0.4">
 <script src="classes.js"></script>
 <script>
-    // set up rectangle
-    var colours, mirroring, timing, targetSync, AHidden, stickAndHole, conditionArray, squareDimensions, canvas, slider;
+    nextButton();
 
-    // change variables here
-    colours = ["red", "blue", "purple"];
-    mirroring = false;
-    timing = "reversed";
-    targetSync = "B";
-    AHidden = false;
-    stickAndHole = false;
-    squareDimensions = [50, 50];
-
-    conditionArray = [timing, targetSync, AHidden, stickAndHole];
-    canvas = document.getElementById("myCanvas");
-    slider = document.getElementById("myRange");
-
-    var myRectangle = new Rectangle(colours, mirroring, conditionArray, squareDimensions, canvas, slider);
-    myRectangle.setTimeouts();
 
     function animateAgain (){
-        for (var i = 0; i < myRectangle.animationTimer.length; i++) {
-            clearTimeout(myRectangle.animationTimer[i])
+        for (var i = 0; i < window.myRectangle.animationTimer.length; i++) {
+            clearTimeout(window.myRectangle.animationTimer[i])
         }
-        myRectangle.animationStarted = Infinity;
-        myRectangle.animationEnded = false;
-        myRectangle.resetSquares();
-        myRectangle.draw();
-        myRectangle.setTimeouts();
+        window.myRectangle.animationStarted = Infinity;
+        window.myRectangle.animationEnded = false;
+        window.myRectangle.resetSquares();
+        window.myRectangle.draw();
+        window.myRectangle.setTimeouts();
     }
+    function nextButton () {
+        // set up rectangle
+        var colours, mirroring, timing, targetSync, AHidden, stickAndHole, conditionArray, squareDimensions, speed, canvas, slider;
 
+        // change variables here
+        colours = ["red", "blue", "purple"];
+        mirroring = document.getElementById("mirroring").value === "Yes";
+        timing = document.getElementById("timing").value;
+        targetSync = "B";
+        AHidden = document.getElementById("aHide").value === "Yes";
+        stickAndHole = document.getElementById("extraObjects").value === "Yes";
+        squareDimensions = [50, 50];
+        speed = Number(document.getElementById("speed").value);
+        conditionArray = [timing, targetSync, AHidden, stickAndHole];
+        canvas = document.getElementById("myCanvas");
+        slider = document.getElementById("myRange");
+
+        delete window.myRectangle;
+        window.myRectangle = new Rectangle(colours, mirroring, conditionArray, squareDimensions, canvas, slider, speed);
+        animateAgain()
+    }
 </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 class Rectangle {
 
-    constructor(colours, mirroring, condition, squareDimensions, canvas, slider) {
+    constructor(colours, mirroring, condition, squareDimensions, canvas, slider, speed) {
         this.colours = colours; // expressed in ABC order
         this.mirrored = mirroring;
         this.launchingType = condition[0];
@@ -17,7 +17,8 @@ class Rectangle {
         this.animationEnded = false;
         this.flashState = false;
         this.animationTimer = [];
-        this.speed = 0.2;
+        this.speed = speed;
+        this.durations = [];
 
         this.squareList = [];
         this.placeSquares();
@@ -37,34 +38,37 @@ class Rectangle {
     }
 
     setUp(){
-        var canvasMargin = this.canvas.width / 8;
+        var canvasMargin = this.canvas.width / 4;
         // give start/end positions
         for (var i = 0; i<3; i++) {
             var square = this.squareList[i];
             var startPosition, endPosition;
             if (i === 0) {
-                startPosition = this.mirrored ? canvasMargin + 5 * squareDimensions[0] : 0;
-                endPosition = this.mirrored ? canvasMargin - 2.5 * squareDimensions[0] : canvasMargin + 2.5 * squareDimensions[0];
+                startPosition = this.mirrored ? canvasMargin + 5 * this.squareDimensions[0] : canvasMargin;
+                endPosition = this.mirrored ? startPosition - 2.5 * this.squareDimensions[0] : canvasMargin + 2.5 * this.squareDimensions[0];
             } else {
-                startPosition = this.mirrored ? canvasMargin + 6 * squareDimensions[0] - 4 * squareDimensions[0] * i : canvasMargin + squareDimensions[0] + 2.5 * squareDimensions[0] * i;
-                endPosition = this.mirrored ? startPosition - 2 * squareDimensions[0] : startPosition + 2 * squareDimensions[0];
+                startPosition = this.mirrored ? this.squareList[0].finalPosition[0] - this.squareDimensions[0] - 2 * this.squareDimensions[0] * (i-1) : this.squareList[0].finalPosition[0] + this.squareDimensions[0] + 2*this.squareDimensions[0] * (i-1);
+                endPosition = this.mirrored ? startPosition - this.squareDimensions[0] : startPosition + this.squareDimensions[0];
             }
             square.startPosition = [startPosition, 100];
             square.finalPosition = [endPosition, 100];
+            var duration = (endPosition - startPosition) / this.speed; //(pix p step)
+            duration = this.mirrored ? duration * -1 : duration;
+            square.duration = duration;
+            this.durations.push(duration);
+
         this.draw();
-        // duration = distance / speed (pix p step)
         }
 
         // give "move At" instructions
         if (this.launchingType === "canonical"){
-            for (var i = 0; i<3; i++) {
-                var square = this.squareList[i];
-                square.moveAt = 200 * i
-            }
+            this.squareList[0].moveAt = 0;
+            this.squareList[1].moveAt = this.squareList[0].duration;
+            this.squareList[2].moveAt = this.squareList[1].moveAt + this.squareList[1].duration;
         } else {
             this.squareList[0].moveAt = 0;
-            this.squareList[1].moveAt = 200 * 2;
-            this.squareList[2].moveAt = 200;
+            this.squareList[2].moveAt = this.squareList[0].duration;
+            this.squareList[1].moveAt = this.squareList[2].moveAt + this.squareList[2].duration;
         }
     }
     resetSquares() {
@@ -136,23 +140,25 @@ class Rectangle {
         var squareA = this.squareList[0];
         var squareB = this.squareList[1];
         var squareC = this.squareList[2];
-        var stickSize = squareA.dimensions[0] * 2.5;
+        var stickSize = squareA.dimensions[0] * 2;
         if (this.mirrored) {
             // draw hole
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(squareB.position[0], squareB.position[1] + 1/3 * squareB.dimensions[1], squareB.dimensions[0],1/3* squareB.dimensions[1]);
 
             // draw stick
-            // horizontal
-            ctx.beginPath();
-            ctx.moveTo(squareA.position[0], squareA.position[1] + 1 / 2 * squareA.dimensions[1]);
-            ctx.lineTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1]);
-            ctx.stroke();
-            // vertical
-            ctx.beginPath();
-            ctx.moveTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] - 10);
-            ctx.lineTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] + 10);
-            ctx.stroke();
+            if (!this.hideA) {
+                ctx.beginPath();
+                ctx.moveTo(squareA.position[0], squareA.position[1] + 1 / 2 * squareA.dimensions[1]);
+                ctx.lineTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1]);
+                ctx.stroke();
+                // vertical
+                ctx.beginPath();
+                ctx.moveTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] - 10);
+                ctx.lineTo(squareA.position[0] - stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] + 10);
+                ctx.stroke();
+            }
+
         } else {
             // draw hole
             ctx.fillStyle = "#ffffff";
@@ -160,16 +166,34 @@ class Rectangle {
 
             // draw stick
             // horizontal
-            ctx.beginPath();
-            ctx.moveTo(squareA.position[0] + squareA.dimensions[0], squareA.position[1] + 1 / 2 * squareA.dimensions[1]);
-            ctx.lineTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1]);
-            ctx.stroke();
-            // vertical
-            ctx.beginPath();
-            ctx.moveTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] - 10);
-            ctx.lineTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] + 10);
-            ctx.stroke();
+            if (!this.hideA) {
+                ctx.beginPath();
+                ctx.moveTo(squareA.position[0] + squareA.dimensions[0], squareA.position[1] + 1 / 2 * squareA.dimensions[1]);
+                ctx.lineTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1]);
+                ctx.stroke();
+                // vertical
+                ctx.beginPath();
+                ctx.moveTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] - 10);
+                ctx.lineTo(squareA.position[0] + squareA.dimensions[0] + stickSize, squareA.position[1] + 1 / 2 * squareA.dimensions[1] + 10);
+                ctx.stroke();
+            }
         }
+        // draw chain
+        ctx.beginPath();
+        var squareBMiddleX, squareBChosenY, squareCMiddleX, squareCChosenY;
+        squareBMiddleX = squareB.position[0] + squareB.dimensions[0] * 1 / 2;
+        squareBChosenY = squareB.position[1] + squareB.dimensions[1] * 9 / 10;
+        squareCMiddleX = squareC.position[0] + squareC.dimensions[0] * 1 / 2;
+        squareCChosenY = squareC.position[1] + squareC.dimensions[1] * 9 / 10;
+
+        var distanceBetweenSquares, squareMiddlePoint;
+        distanceBetweenSquares = Math.abs(squareBMiddleX - squareCMiddleX);
+        squareMiddlePoint = this.mirrored ? distanceBetweenSquares / 2 + squareCMiddleX : distanceBetweenSquares / 2 + squareBMiddleX;
+
+        var chosenCPY = squareB.position[1] + squareB.dimensions[1] + 120 - 0.5 * distanceBetweenSquares;
+        ctx.moveTo(squareBMiddleX, squareBChosenY);
+        ctx.quadraticCurveTo(squareMiddlePoint, chosenCPY, squareCMiddleX, squareCChosenY);
+        ctx.stroke();
     }
     flashOn() {
         if (this.flashState === false){
