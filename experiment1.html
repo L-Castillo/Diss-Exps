@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Experiment 1</title>
+</head>
+<body>
+<canvas id="myCanvas" width="1000" height="400" style="border: solid black 2px">
+</canvas>
+<div class="slidecontainer" id="slider">
+    <input onmouseup="animateAgain()" type="range" min="1" max="200" value="100" class="slider" style="width:600px" id="myRange">
+    <button id="nextButton" onclick="animateAgain()" style="display:inline">Next</button>
+</div>
+<script src="classes.js"></script>
+<script>
+    // set up rectangle
+    var colours, mirroring, timing, targetSync, AHidden, stickAndHole, conditionArray, squareDimensions, canvas, slider;
+
+    // change variables here
+    colours = ["red", "blue", "purple"];
+    mirroring = false;
+    timing = "reversed";
+    targetSync = "B";
+    AHidden = false;
+    stickAndHole = false;
+    squareDimensions = [50, 50];
+
+    conditionArray = [timing, targetSync, AHidden, stickAndHole];
+    canvas = document.getElementById("myCanvas");
+    slider = document.getElementById("myRange");
+
+    var myRectangle = new Rectangle(colours, mirroring, conditionArray, squareDimensions, canvas, slider);
+    myRectangle.setTimeouts();
+
+    function animateAgain (){
+        for (var i = 0; i < myRectangle.animationTimer.length; i++) {
+            clearTimeout(myRectangle.animationTimer[i])
+        }
+        myRectangle.animationStarted = Infinity;
+        myRectangle.animationEnded = false;
+        myRectangle.resetSquares();
+        myRectangle.draw();
+        myRectangle.setTimeouts();
+    }
+
+</script>
+</body>
+</html>
