@@ -7,15 +7,15 @@
 <body>
 <canvas id="myCanvas" width="1000" height="400" style="border: solid black 2px">
 </canvas>
-//<div class="slidecontainer" id="slider">
-  //  <input onmouseup="animateAgain()" type="range" min="1" max="200" value="100" class="slider" style="width:600px" id="myRange">
-    //<button id="nextButton" onclick="newAnimation()" style="display:inline">New Animation</button>
-//</div>
+<!--<div class="slidecontainer" id="slider">-->
+<!--    <input onmouseup="animateAgain()" type="range" min="1" max="200" value="100" class="slider" style="width:600px" id="myRange">-->
+<!--    <button id="nextButton" onclick="newAnimation()" style="display:inline">New Animation</button>-->
+<!--</div>-->
 
 <button onclick="window.location.href = 'tests.html'">See Test Trials</button>
 <script src="classes.js"></script>
 <script>
-  //  document.getElementById("slider").style.visibility = "hidden";
+    // document.getElementById("slider").style.visibility = "hidden";
     var trainingType = "agentic";
     var squareDimensions = [50, 50];
     var animationEnded = false;
@@ -56,7 +56,7 @@
             if (moment !== 3) {
                 t2 = (step - 500) / totalDuration;
             } else {
-                t2 = 0.5;
+                t2 = 0.5
             }
             square1.position = getBezierPoints(point1, point2, point3, point4, t);
 
