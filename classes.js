@@ -1,6 +1,6 @@
-class Rectangle {
+class testAnimation {
 
-    constructor(colours, mirroring, condition, squareDimensions, canvas, slider, speed) {
+    constructor(colours, mirroring, condition, squareDimensions, canvas, slider, speed, facesBool) {
         this.colours = colours; // expressed in ABC order
         this.mirrored = mirroring;
         this.launchingType = condition[0];
@@ -10,8 +10,11 @@ class Rectangle {
         this.squareDimensions = squareDimensions;
         this.canvas = canvas;
         this.slider = slider;
+        this.faces = facesBool;
 
         this.squareNames = ["A", "B", "C"];
+        this.faceNames = ["angry", "love", "surprise"];
+        this.faceNamesR = ["angry", "loveR", "surprise"];
         this.participantCanLeave = false;
         this.animationStarted = Infinity;
         this.animationEnded = false;
@@ -28,7 +31,18 @@ class Rectangle {
     placeSquares() {
         for (var i = 0; i < 3; i++) {
             var squareColour = (this.hideA && i === 0) ? "hidden" : this.colours[i];
-            var newSquare = new Square(this.squareNames[i], squareColour, this.squareDimensions);
+            var face;
+            if (this.faces === true){
+                if (this.mirrored===true){
+                    face = this.faceNamesR[i];
+                } else {
+                    face = this.faceNames[i];
+                }
+                var newSquare = new Square(this.squareNames[i], squareColour, this.squareDimensions, face);
+            } else {
+                var newSquare = new Square(this.squareNames[i], squareColour, this.squareDimensions, false);
+            }
+
             this.squareList.push(newSquare);
         }
         if (this.hideA === true) {
@@ -216,7 +230,7 @@ class Rectangle {
 }
 
 class Square {
-    constructor(name, colourName, dimensions) {
+    constructor(name, colourName, dimensions, face) {
         this.colourName = colourName;
         switch (this.colourName) {
             case "red":
@@ -250,6 +264,25 @@ class Square {
 
         this.animationTimer = 0;
         this.pixelsPerStep = [0,0];
+
+        this.hasFace = face;
+        if (this.hasFace !== false){
+            this.facePic = new Image();
+            switch (this.hasFace) {
+                case "angry":
+                    this.facePic.src = "Angry.png";
+                    break;
+                case "love":
+                    this.facePic.src = "Love.png";
+                    break;
+                case "loveR":
+                    this.facePic.src = "LoveR.png";
+                    break;
+                case "surprise":
+                    this.facePic.src = "Surprise.png";
+                    break;
+            }
+        }
     }
 
     draw(canvas, step){
@@ -267,16 +300,25 @@ class Square {
 
         this.drawMe(canvas);
 
+
+
         if(this.movedAt ===-1 && myStep>0) {
             this.movedAt = step;
             // console.log(this.name + ' moved at ' + this.movedAt);
         }
     }
-    drawMe(canvas){
+
+    drawMe(canvas) {
         var ctx = canvas.getContext("2d");
         ctx.fillStyle = this.colour;
         ctx.fillRect(this.position[0],  this.position[1], this.dimensions[0], this.dimensions[1]);
+
+        if (this.hasFace !== false && this.colourName !== "hidden") {
+            ctx.drawImage(this.facePic, this.position[0], this.position[1], this.dimensions[0], this.dimensions[1])
+        }
     }
+
+
     reset(){
         this.movedAt = -1;
         this.position = this.startPosition.slice();
