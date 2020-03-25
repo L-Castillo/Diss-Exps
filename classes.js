@@ -204,7 +204,7 @@ class testAnimation {
         distanceBetweenSquares = Math.abs(squareBMiddleX - squareCMiddleX);
         squareMiddlePoint = this.mirrored ? distanceBetweenSquares / 2 + squareCMiddleX : distanceBetweenSquares / 2 + squareBMiddleX;
 
-        var chosenCPY = squareB.position[1] + squareB.dimensions[1] + 120 - 0.5 * distanceBetweenSquares;
+        var chosenCPY = squareB.position[1] + squareB.dimensions[1] + 120 - 0.75 * distanceBetweenSquares;
         ctx.moveTo(squareBMiddleX, squareBChosenY);
         ctx.quadraticCurveTo(squareMiddlePoint, chosenCPY, squareCMiddleX, squareCChosenY);
         ctx.stroke();
